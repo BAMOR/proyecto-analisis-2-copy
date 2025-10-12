@@ -47,6 +47,8 @@ public class ProductServiceImpl implements ProductService {
         }
         throw new RuntimeException("Producto no encontrado con id: " + id);
     }
+    // ultima verion
+    
     
 
 }
