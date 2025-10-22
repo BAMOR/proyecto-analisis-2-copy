@@ -1,54 +1,86 @@
+// src/Hooks/useItemsCart.js
 import { useEffect, useReducer } from "react";
+import { fetchCartFromBackend, addToCartBackend, deleteFromCartBackend } from "../services/cartService";
 import { itemsReducer } from "../reducer/itemsReducer";
-import { AddProductCart, DeleteProductCart, UpdateQuantityProductCart } from "../reducer/itemAction";
+import { AddProductCart, DeleteProductCart } from "../reducer/itemAction";
+import { processPayment } from "../services/paymentService";
 
 
-const initialCartItems = JSON.parse(sessionStorage.getItem('cart')) || [];
+// Estado inicial vacío
+const initialCartItems = [];
 
 export const useItemCart = () => {
-     // const [cartItems, setcartItems] = useState(initialCartItems)
-    const [cartItems, dispatch] = useReducer(itemsReducer, initialCartItems);
+  const [cartItems, dispatch] = useReducer(itemsReducer, initialCartItems);
 
-        useEffect( () => {
-            sessionStorage.setItem('cart', JSON.stringify(cartItems));
-    
-        }, [cartItems]);
-    
+  // Cargar carrito desde la BD al iniciar
+  useEffect(() => {
+    const loadCart = async () => {
+      try {
+        const items = await fetchCartFromBackend();
+        // Restablecer el estado con los datos de la BD
+        dispatch({
+          type: 'SET_CART_FROM_BACKEND',
+          payload: items
+        });
+      } catch (error) {
+        console.error('No se pudo cargar el carrito:', error);
+      }
+    };
+    loadCart();
+  }, []);
 
-    const handlerAddProductCart = (product) => {
-        const hasItem = cartItems.find((i) => i.product.id === product.id)
-        if (hasItem) {
-
-            dispatch({
-                type: UpdateQuantityProductCart,
-                payload: product,
-            });
-
-        } else {
-            dispatch({
-                type: AddProductCart,
-                payload: product,
-            });
-
+  const handlerAddProductCart = async (product) => {
+    try {
+      const newItem = await addToCartBackend(product);
+      // Agregar al estado local
+      dispatch({
+        type: AddProductCart,
+        payload: {
+          product,
+          id: newItem.id, // ID del ítem en la BD
+          quantity: 1
         }
-        
-
+      });
+    } catch (error) {
+      console.error('Error al agregar producto:', error);
     }
+  };
 
-    const handlerDeleteProduct = (id) => {
-       dispatch ({
+  const handlerDeleteProduct = async (itemId) => {
+    try {
+      await deleteFromCartBackend(itemId);
+      dispatch({
         type: DeleteProductCart,
-        payload: id
-       })
-
+        payload: itemId
+      });
+    } catch (error) {
+      console.error('Error al eliminar producto:', error);
     }
+  };
 
-    return {
-
-        cartItems,
-        handlerAddProductCart,
-        handlerDeleteProduct
-
+    const processCheckout = async (paymentMethod) => {
+    try {
+      const message = await processPayment(paymentMethod);
+      // Vaciar carrito local después del pago exitoso
+      dispatch({
+        type: 'CLEAR_CART'
+      });
+      return message;
+    } catch (error) {
+      throw error;
     }
+  };
 
-}
+
+  return {
+    cartItems,
+    handlerAddProductCart,
+    handlerDeleteProduct,
+     processCheckout 
+  };
+
+
+  
+
+};
+
