@@ -1,4 +1,3 @@
-// backend-cartapp/src/main/java/com/paulo/backend/cartapp/backend_cartapp/strategies/PayPalPayment.java
 package com.paulo.backend.cartapp.backend_cartapp.strategies;
 
 public class PayPalPayment implements PaymentStrategy {
@@ -11,5 +10,12 @@ public class PayPalPayment implements PaymentStrategy {
     @Override
     public void pay(double amount) {
         System.out.println("Pagando $" + amount + " con PayPal a " + email);
+    }
+
+    @Override
+    public String toString() {
+        return "PayPalPayment{" +
+                "email='" + email + '\'' +
+                '}';
     }
 }

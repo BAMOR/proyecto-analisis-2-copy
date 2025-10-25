@@ -1,5 +1,5 @@
 // src/services/paymentService.js
-const API_URL = 'http://localhost:8080';
+const API_URL = 'http://localhost:8080/cartapp';
 
 export const processPayment = async (paymentMethod) => {
   const response = await fetch(`${API_URL}/cart/checkout?paymentMethod=${paymentMethod}&userId=default_user`, {

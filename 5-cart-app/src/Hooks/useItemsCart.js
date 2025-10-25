@@ -29,23 +29,19 @@ export const useItemCart = () => {
     loadCart();
   }, []);
 
-  const handlerAddProductCart = async (product) => {
-    try {
-      const newItem = await addToCartBackend(product);
-      // Agregar al estado local
-      dispatch({
-        type: AddProductCart,
-        payload: {
-          product,
-          id: newItem.id, // ID del ítem en la BD
-          quantity: 1
-        }
-      });
-    } catch (error) {
-      console.error('Error al agregar producto:', error);
-    }
-  };
-
+const handlerAddProductCart = async (product) => {
+  try {
+    const newItem = await addToCartBackend(product);
+    // Recargar el carrito desde la BD para reflejar los cambios
+    const updatedCart = await fetchCartFromBackend();
+    dispatch({
+      type: 'SET_CART_FROM_BACKEND',
+      payload: updatedCart
+    });
+  } catch (error) {
+    console.error('Error al agregar producto:', error);
+  }
+};
   const handlerDeleteProduct = async (itemId) => {
     try {
       await deleteFromCartBackend(itemId);

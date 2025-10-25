@@ -2,7 +2,7 @@
 
 export const getProducts = async() => {
 
-    const response = await fetch('http://localhost:8080/products')
+    const response = await fetch('http://localhost:8080/cartapp/products')
     const products = response.json();
     return products;
 }

@@ -19,7 +19,7 @@ public class ProductServiceImpl implements ProductService {
     private ProductRepository repository;
 
     // 👇 Rol fijo para pruebas (en producción vendría del usuario autenticado)
-    private static final String CURRENT_USER_ROLE = "admin"; // ← Puedes cambiar a "admin" para probar escritura
+    private static final String CURRENT_USER_ROLE = "user"; // ← Puedes cambiar a "admin" para probar escritura
 
     @Override
     @Transactional(readOnly = true)

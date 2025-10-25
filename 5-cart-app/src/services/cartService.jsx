@@ -1,5 +1,5 @@
 // src/services/cartService.js
-const API_URL = 'http://localhost:8080';
+const API_URL = 'http://localhost:8080/cartapp';
 
 // Obtener carrito desde la BD
 export const fetchCartFromBackend = async () => {
